@@ -3,6 +3,7 @@ package com.mobile.app.ws.controller;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,9 +40,10 @@ public class UserController {
 		return userDetailsResponse; 
 	}
 	
-	@GetMapping
-	public String getUser() {
-		return "Get User Called";
+	@GetMapping(path = "/{userId}")
+	public UserDetailsResponse getUserByUserId(@PathVariable("userId") String userId) {
+		UserDto userDto = userService.getUserById(userId);
+		return userMapper.convertUserDtoToUserDetailsResponse(userDto);
 	}
 
 	@PutMapping
