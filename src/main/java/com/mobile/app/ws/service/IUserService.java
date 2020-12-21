@@ -7,4 +7,6 @@ public interface IUserService {
 	public UserDto saveUser(UserDto dto);
 	
 	public UserDto getUserById(String userId);
+	
+	public UserDto updateUser(String userId, UserDto userDto);
 }

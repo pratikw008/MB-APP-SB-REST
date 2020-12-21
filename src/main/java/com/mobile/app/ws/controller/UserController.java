@@ -17,7 +17,7 @@ import com.mobile.app.ws.model.response.UserDetailsResponse;
 import com.mobile.app.ws.service.IUserService;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(path = "/users")
 public class UserController {
 	
 	private IUserService userService;
@@ -30,9 +30,12 @@ public class UserController {
 	}
 
 	@PostMapping(consumes = {
-			MediaType.APPLICATION_JSON_VALUE,
-			MediaType.APPLICATION_XML_VALUE
-	})
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				},
+				produces = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				}
+	)
 	public UserDetailsResponse saveUser(@RequestBody UserDetailsRequest userDetails) {
 		UserDto userDto = userMapper.convertUserDetailsRequestToUserDto(userDetails);
 		UserDto savedUser = userService.saveUser(userDto);
@@ -40,15 +43,30 @@ public class UserController {
 		return userDetailsResponse; 
 	}
 	
-	@GetMapping(path = "/{userId}")
+	@GetMapping(path = "/{userId}",
+				produces = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				}
+	)
 	public UserDetailsResponse getUserByUserId(@PathVariable("userId") String userId) {
 		UserDto userDto = userService.getUserById(userId);
 		return userMapper.convertUserDtoToUserDetailsResponse(userDto);
 	}
 
-	@PutMapping
-	public String updateUser() {
-		return "Update User Called"; 
+	@PutMapping(path = "/{userId}",
+				consumes = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				},
+				produces = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				}
+	)
+	public UserDetailsResponse updateUser(@PathVariable("userId")String userId, 
+										  @RequestBody UserDetailsRequest userDetailsRequest) {
+		
+		UserDto userDto = userMapper.convertUserDetailsRequestToUserDto(userDetailsRequest);
+		UserDto updatedUser = userService.updateUser(userId, userDto);
+		return userMapper.convertUserDtoToUserDetailsResponse(updatedUser);
 	}
 
 	@DeleteMapping
