@@ -1,5 +1,11 @@
 package com.mobile.app.ws.service.impl;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +55,7 @@ public class UserServiceImpl implements IUserService {
 	public UserDto getUserById(String userId) {
 		return userRepository.findByUserId(userId)
 				.map(userMapper::convertUserEntityToUserDto)
-				.orElseThrow(() -> new InvalidUserIdException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()));
+				.orElseThrow(() -> new InvalidUserIdException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()+userId));
 
 	}
 
@@ -57,9 +63,26 @@ public class UserServiceImpl implements IUserService {
 	public UserDto updateUser(String userId, UserDto userDto) {
 		return userRepository.findByUserId(userId)
 			   .map(userEntity -> this.updateUser(userEntity, userDto))
-			   .orElseThrow(() -> new InvalidUserIdException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage())); 
+			   .orElseThrow(() -> new InvalidUserIdException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()+userId)); 
 	}
-
+	
+	@Override
+	public void deleteUser(String userId) {
+		Optional<UserEntity> optional = userRepository.findByUserId(userId);
+		if(optional.isEmpty())
+			throw new InvalidUserIdException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()+userId);
+		
+		userRepository.delete(optional.get());
+	}
+	
+	@Override
+	public List<UserDto> getAllUsers(int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<UserEntity> pages = userRepository.findAll(pageable);
+		List<UserEntity> userEntities = pages.getContent();
+		return userMapper.convertListUserEntityToListUserDto(userEntities);
+	}
+	
 	private UserDto updateUser(UserEntity userEntity, UserDto userDto) {
 		if(userDto.getFirstName() != null || !userDto.getFirstName().isEmpty()) 
 			userEntity.setFirstName(userDto.getFirstName());

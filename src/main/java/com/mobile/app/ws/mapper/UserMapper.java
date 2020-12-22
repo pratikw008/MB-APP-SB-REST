@@ -1,5 +1,7 @@
 package com.mobile.app.ws.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -19,4 +21,8 @@ public interface UserMapper {
 	public UserDto convertUserEntityToUserDto(UserEntity userEntity);
 	
 	public UserEntity convertUserDtoToUserEntity(UserDto userDto);
+	
+	public List<UserDto> convertListUserEntityToListUserDto(List<UserEntity> users);
+	
+	public List<UserDetailsResponse> convertListDtoToListUserDtlsResponse(List<UserDto> dtos);
 }
