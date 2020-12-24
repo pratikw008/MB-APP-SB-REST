@@ -10,7 +10,7 @@ import com.mobile.app.ws.entity.UserEntity;
 import com.mobile.app.ws.model.request.UserDetailsRequest;
 import com.mobile.app.ws.model.response.UserDetailsResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {AddressMapper.class})
 public interface UserMapper {
 	
 	@Mapping(source = "password", target = "encryptedPassword")

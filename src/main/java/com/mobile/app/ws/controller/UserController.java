@@ -13,13 +13,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mobile.app.ws.dto.AddressDto;
 import com.mobile.app.ws.dto.UserDto;
+import com.mobile.app.ws.mapper.AddressMapper;
 import com.mobile.app.ws.mapper.UserMapper;
 import com.mobile.app.ws.model.request.UserDetailsRequest;
+import com.mobile.app.ws.model.response.AddressDetailsResponse;
 import com.mobile.app.ws.model.response.OpeartionName;
 import com.mobile.app.ws.model.response.OpeartionStatus;
 import com.mobile.app.ws.model.response.OperationStatusModel;
 import com.mobile.app.ws.model.response.UserDetailsResponse;
+import com.mobile.app.ws.service.IAddressService;
 import com.mobile.app.ws.service.IUserService;
 
 @RestController
@@ -28,10 +32,18 @@ public class UserController {
 	
 	private IUserService userService;
 	
-	private UserMapper userMapper;
+	private IAddressService addressService;
 	
-	public UserController(IUserService userService, UserMapper userMapper) {
+	private AddressMapper addressMapper;
+	
+	private UserMapper userMapper;
+
+	public UserController(IUserService userService, IAddressService addressService, AddressMapper addressMapper,
+			UserMapper userMapper) {
+		super();
 		this.userService = userService;
+		this.addressService = addressService;
+		this.addressMapper = addressMapper;
 		this.userMapper = userMapper;
 	}
 
@@ -43,6 +55,7 @@ public class UserController {
 				}
 	)
 	public UserDetailsResponse saveUser(@RequestBody UserDetailsRequest userDetails) {
+		System.out.println(userDetails.getAddresses());
 		UserDto userDto = userMapper.convertUserDetailsRequestToUserDto(userDetails);
 		UserDto savedUser = userService.saveUser(userDto);
 		UserDetailsResponse userDetailsResponse = userMapper.convertUserDtoToUserDetailsResponse(savedUser);
@@ -91,5 +104,15 @@ public class UserController {
 			   @RequestParam(name = "size", defaultValue = "10")int size) {
 		List<UserDto> dtos = userService.getAllUsers(page, size);
 		return userMapper.convertListDtoToListUserDtlsResponse(dtos);
+	}
+	
+	@GetMapping(path = "/{userId}/addresses",
+				produces = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+	})
+	public List<AddressDetailsResponse> getAllUserAddressesById(@PathVariable("userId") String userId) {
+		
+		List<AddressDto> addresses = addressService.getAllUserAddressesById(userId);
+		return addressMapper.convertListDtoToListAddressResponse(addresses);		
 	}
 }

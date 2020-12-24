@@ -1,6 +1,7 @@
 package com.mobile.app.ws.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +29,6 @@ public class UserDto implements Serializable{
 	private String emailVerificationToken;
 	
 	private Boolean emailVerificationStatus = false;
+	
+	private List<AddressDto> addresses;
 }

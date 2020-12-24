@@ -46,7 +46,12 @@ public class UserServiceImpl implements IUserService {
 		UserEntity userEntity = userMapper.convertUserDtoToUserEntity(dto);
 		userEntity.setUserId(utils.generateUserId(30));
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
-
+		System.out.println(userEntity.getAddresses());
+		userEntity.getAddresses().forEach(address -> {
+			address.setAddressId(utils.generateAddressId(30));
+			address.setUserEntity(userEntity);
+		});
+		
 		UserEntity savedInDb = userRepository.save(userEntity);
 		return userMapper.convertUserEntityToUserDto(savedInDb);
 	}

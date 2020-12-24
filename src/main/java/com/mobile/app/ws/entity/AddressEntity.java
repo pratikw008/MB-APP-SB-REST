@@ -2,17 +2,17 @@ package com.mobile.app.ws.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -24,44 +24,36 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "addresses")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity implements Serializable {
+public class AddressEntity implements Serializable {
 
-	private static final long serialVersionUID = 735549111701929336L;
+	private static final long serialVersionUID = 1701609100861155148L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "U_ID")
-	private Long Id;
+	@Column(name = "ID")
+	private Long id;
+
+	private String addressId;
 	
-	@Column
-	private String userId;
+	private String city;
 	
-	@Column(nullable = false, length = 50)
-	private String firstName;
+	private String country;
 	
-	@Column(nullable = false, length = 50)
-	private String lastName;
+	private String streetName;
 	
-	//@Column(nullable = false, length = 50, unique = true)
-	@Column(nullable = false, length = 50)
-	private String email;
+	private String postalCode;
 	
-	@Column(nullable = false)
-	private String encryptedPassword;
+	@Enumerated(EnumType.STRING)
+	private AddressType addressType; 
 	
-	@Column
-	private String emailVerificationToken;
-	
-	@Column(nullable = false)
-	private Boolean emailVerificationStatus = false;
-	
-	@OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<AddressEntity> addresses;
+	@ManyToOne
+	@JoinColumn(name = "user_id",referencedColumnName = "U_ID")
+	private UserEntity userEntity;
 	
 	@CreatedDate
 	@Column(updatable = false)
