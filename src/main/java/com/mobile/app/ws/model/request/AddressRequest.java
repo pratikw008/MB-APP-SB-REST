@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class AddressDetailsRequest {
+public class AddressRequest {
 	
 	private String city;
 

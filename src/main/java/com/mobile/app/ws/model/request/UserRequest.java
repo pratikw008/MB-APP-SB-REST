@@ -1,15 +1,14 @@
-package com.mobile.app.ws.model.response;
+package com.mobile.app.ws.model.request;
 
 import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
+
 @Setter
-public class UserDetailsResponse {
-	
-	private String userId;
+@Getter
+public class UserRequest {
 	
 	private String firstName;
 	
@@ -17,5 +16,7 @@ public class UserDetailsResponse {
 	
 	private String email;
 	
-	private List<AddressDetailsResponse> addresses;
+	private String password;
+	
+	private List<AddressRequest> addresses;
 }

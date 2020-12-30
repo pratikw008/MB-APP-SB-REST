@@ -43,23 +43,22 @@ public class UserServiceImpl implements IUserService {
 		if(userRepository.existsByEmail(dto.getEmail()))
 			throw new RuntimeException("Record Already Exists");
 
-		UserEntity userEntity = userMapper.convertUserDtoToUserEntity(dto);
+		UserEntity userEntity = userMapper.mapUserDtoToUserEntity(dto);
 		userEntity.setUserId(utils.generateUserId(30));
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
-		System.out.println(userEntity.getAddresses());
 		userEntity.getAddresses().forEach(address -> {
 			address.setAddressId(utils.generateAddressId(30));
 			address.setUserEntity(userEntity);
 		});
 		
 		UserEntity savedInDb = userRepository.save(userEntity);
-		return userMapper.convertUserEntityToUserDto(savedInDb);
+		return userMapper.mapUserEntityToUserDto(savedInDb);
 	}
 
 	@Override
 	public UserDto getUserById(String userId) {
 		return userRepository.findByUserId(userId)
-				.map(userMapper::convertUserEntityToUserDto)
+				.map(userMapper::mapUserEntityToUserDto)
 				.orElseThrow(() -> new InvalidUserIdException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()+userId));
 
 	}
@@ -85,23 +84,12 @@ public class UserServiceImpl implements IUserService {
 		Pageable pageable = PageRequest.of(page, size);
 		Page<UserEntity> pages = userRepository.findAll(pageable);
 		List<UserEntity> userEntities = pages.getContent();
-		return userMapper.convertListUserEntityToListUserDto(userEntities);
+		return userMapper.mapListUserEntityToListUserDto(userEntities);
 	}
 	
 	private UserDto updateUser(UserEntity userEntity, UserDto userDto) {
-		if(userDto.getFirstName() != null || !userDto.getFirstName().isEmpty()) 
-			userEntity.setFirstName(userDto.getFirstName());
-		
-		if(userDto.getLastName() != null || !userDto.getLastName().isEmpty())
-			userEntity.setLastName(userDto.getLastName());
-		
-		if(userDto.getEmail() != null || !userDto.getEmail().isEmpty())
-			userEntity.setEmail(userDto.getEmail());
-		
-		if(userDto.getPassword() != null || !userDto.getPassword().isEmpty())
-			userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-
-		UserEntity savedInDb = userRepository.save(userEntity);
-		return userMapper.convertUserEntityToUserDto(savedInDb);
+		userMapper.updateUser(userDto, userEntity);
+		UserEntity updated = userRepository.save(userEntity);
+		return userMapper.mapUserEntityToUserDto(updated);
 	}
 }

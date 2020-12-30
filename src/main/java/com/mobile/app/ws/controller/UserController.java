@@ -17,12 +17,13 @@ import com.mobile.app.ws.dto.AddressDto;
 import com.mobile.app.ws.dto.UserDto;
 import com.mobile.app.ws.mapper.AddressMapper;
 import com.mobile.app.ws.mapper.UserMapper;
-import com.mobile.app.ws.model.request.UserDetailsRequest;
-import com.mobile.app.ws.model.response.AddressDetailsResponse;
+import com.mobile.app.ws.mapper.UserRequestMapper;
+import com.mobile.app.ws.model.request.UserRequest;
+import com.mobile.app.ws.model.response.AddressResponse;
 import com.mobile.app.ws.model.response.OpeartionName;
 import com.mobile.app.ws.model.response.OpeartionStatus;
 import com.mobile.app.ws.model.response.OperationStatusModel;
-import com.mobile.app.ws.model.response.UserDetailsResponse;
+import com.mobile.app.ws.model.response.UserResponse;
 import com.mobile.app.ws.service.IAddressService;
 import com.mobile.app.ws.service.IUserService;
 
@@ -37,14 +38,17 @@ public class UserController {
 	private AddressMapper addressMapper;
 	
 	private UserMapper userMapper;
+	
+	private UserRequestMapper userRequestMapper;
 
 	public UserController(IUserService userService, IAddressService addressService, AddressMapper addressMapper,
-			UserMapper userMapper) {
+			UserMapper userMapper, UserRequestMapper userRequestMapper) {
 		super();
 		this.userService = userService;
 		this.addressService = addressService;
 		this.addressMapper = addressMapper;
 		this.userMapper = userMapper;
+		this.userRequestMapper = userRequestMapper;
 	}
 
 	@PostMapping(consumes = {
@@ -54,12 +58,12 @@ public class UserController {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
 				}
 	)
-	public UserDetailsResponse saveUser(@RequestBody UserDetailsRequest userDetails) {
+	public UserResponse saveUser(@RequestBody UserRequest userDetails) {
 		System.out.println(userDetails.getAddresses());
-		UserDto userDto = userMapper.convertUserDetailsRequestToUserDto(userDetails);
+		UserDto userDto = userRequestMapper.mapUserRequestToUserDto(userDetails);
 		UserDto savedUser = userService.saveUser(userDto);
-		UserDetailsResponse userDetailsResponse = userMapper.convertUserDtoToUserDetailsResponse(savedUser);
-		return userDetailsResponse; 
+		UserResponse userResponse = userMapper.mapUserDtoToUserResponse(savedUser);
+		return userResponse; 
 	}
 	
 	@GetMapping(path = "/{userId}",
@@ -67,9 +71,9 @@ public class UserController {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
 				}
 	)
-	public UserDetailsResponse getUserByUserId(@PathVariable("userId") String userId) {
+	public UserResponse getUserByUserId(@PathVariable("userId") String userId) {
 		UserDto userDto = userService.getUserById(userId);
-		return userMapper.convertUserDtoToUserDetailsResponse(userDto);
+		return userMapper.mapUserDtoToUserResponse(userDto);
 	}
 
 	@PutMapping(path = "/{userId}",
@@ -80,12 +84,12 @@ public class UserController {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
 				}
 	)
-	public UserDetailsResponse updateUser(@PathVariable("userId")String userId, 
-										  @RequestBody UserDetailsRequest userDetailsRequest) {
+	public UserResponse updateUser(@PathVariable("userId")String userId, 
+										  @RequestBody UserRequest userRequest) {
 		
-		UserDto userDto = userMapper.convertUserDetailsRequestToUserDto(userDetailsRequest);
+		UserDto userDto = userRequestMapper.mapUserRequestToUserDto(userRequest);
 		UserDto updatedUser = userService.updateUser(userId, userDto);
-		return userMapper.convertUserDtoToUserDetailsResponse(updatedUser);
+		return userMapper.mapUserDtoToUserResponse(updatedUser);
 	}
 
 	@DeleteMapping(path = "/{userId}",
@@ -100,19 +104,19 @@ public class UserController {
 	@GetMapping(produces = {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
 	})
-	public List<UserDetailsResponse> getAllUser(@RequestParam(name = "page", defaultValue = "0")int page, 
+	public List<UserResponse> getAllUser(@RequestParam(name = "page", defaultValue = "0")int page, 
 			   @RequestParam(name = "size", defaultValue = "10")int size) {
 		List<UserDto> dtos = userService.getAllUsers(page, size);
-		return userMapper.convertListDtoToListUserDtlsResponse(dtos);
+		return userMapper.mapListUserDtoToListUserResponse(dtos);
 	}
 	
 	@GetMapping(path = "/{userId}/addresses",
 				produces = {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
 	})
-	public List<AddressDetailsResponse> getAllUserAddressesById(@PathVariable("userId") String userId) {
+	public List<AddressResponse> getAllUserAddressesById(@PathVariable("userId") String userId) {
 		
 		List<AddressDto> addresses = addressService.getAllUserAddressesById(userId);
-		return addressMapper.convertListDtoToListAddressResponse(addresses);		
+		return addressMapper.mapListAddressDtoToListAddressResponse(addresses);		
 	}
 }

@@ -40,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		
 		if(userEntity == null) throw new UsernameNotFoundException("Invalid Credentials");
 		
-		UserDto userDto = userMapper.convertUserEntityToUserDto(userEntity);
+		UserDto userDto = userMapper.mapUserEntityToUserDto(userEntity);
 		
 		return userDto;
 	}

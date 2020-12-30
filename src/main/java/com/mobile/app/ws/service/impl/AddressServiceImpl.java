@@ -35,7 +35,7 @@ public class AddressServiceImpl implements IAddressService {
 		List<AddressEntity> addresses = userRepository.findByUserId(userId)
 					  .map(addressRepository::findAllByUserEntity)
 					  .orElseThrow(() -> new InvalidUserIdException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()+userId));
-		return addressMapper.convertListEntityToListDto(addresses);
+		return addressMapper.mapListEntityToListDto(addresses);
 	}
 
 }

@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AddressDetailsResponse {
+public class AddressResponse {
 	
 	private String addressId;
 	
