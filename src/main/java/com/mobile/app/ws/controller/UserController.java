@@ -13,18 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mobile.app.ws.dto.AddressDto;
 import com.mobile.app.ws.dto.UserDto;
-import com.mobile.app.ws.mapper.AddressMapper;
 import com.mobile.app.ws.mapper.UserMapper;
 import com.mobile.app.ws.mapper.UserRequestMapper;
 import com.mobile.app.ws.model.request.UserRequest;
-import com.mobile.app.ws.model.response.AddressResponse;
 import com.mobile.app.ws.model.response.OpeartionName;
 import com.mobile.app.ws.model.response.OpeartionStatus;
 import com.mobile.app.ws.model.response.OperationStatusModel;
 import com.mobile.app.ws.model.response.UserResponse;
-import com.mobile.app.ws.service.IAddressService;
 import com.mobile.app.ws.service.IUserService;
 
 @RestController
@@ -33,20 +29,13 @@ public class UserController {
 	
 	private IUserService userService;
 	
-	private IAddressService addressService;
-	
-	private AddressMapper addressMapper;
-	
 	private UserMapper userMapper;
 	
 	private UserRequestMapper userRequestMapper;
 
-	public UserController(IUserService userService, IAddressService addressService, AddressMapper addressMapper,
-			UserMapper userMapper, UserRequestMapper userRequestMapper) {
+	public UserController(IUserService userService, UserMapper userMapper, UserRequestMapper userRequestMapper) {
 		super();
 		this.userService = userService;
-		this.addressService = addressService;
-		this.addressMapper = addressMapper;
 		this.userMapper = userMapper;
 		this.userRequestMapper = userRequestMapper;
 	}
@@ -59,7 +48,6 @@ public class UserController {
 				}
 	)
 	public UserResponse saveUser(@RequestBody UserRequest userDetails) {
-		System.out.println(userDetails.getAddresses());
 		UserDto userDto = userRequestMapper.mapUserRequestToUserDto(userDetails);
 		UserDto savedUser = userService.saveUser(userDto);
 		UserResponse userResponse = userMapper.mapUserDtoToUserResponse(savedUser);
@@ -108,15 +96,5 @@ public class UserController {
 			   @RequestParam(name = "size", defaultValue = "10")int size) {
 		List<UserDto> dtos = userService.getAllUsers(page, size);
 		return userMapper.mapListUserDtoToListUserResponse(dtos);
-	}
-	
-	@GetMapping(path = "/{userId}/addresses",
-				produces = {
-					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
-	})
-	public List<AddressResponse> getAllUserAddressesById(@PathVariable("userId") String userId) {
-		
-		List<AddressDto> addresses = addressService.getAllUserAddressesById(userId);
-		return addressMapper.mapListAddressDtoToListAddressResponse(addresses);		
 	}
 }
