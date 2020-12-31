@@ -49,7 +49,13 @@ public class AddressController {
 		return addressMapper.mapListAddressDtoToListAddressResponse(addresses);		
 	}
 	
-	@PostMapping("/{userId}/addresses")
+	@PostMapping(path = "/{userId}/addresses",
+				consumes = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				},
+				produces = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				})
 	public ResponseEntity<AddressResponse> createAddress(@PathVariable("userId") String userId,@RequestBody AddressRequest addressRequest) {
 		AddressDto addressDto = addressRequestMapper.mapAddressRequestToAddressDto(addressRequest);
 		AddressDto savedInDb = addressService.createAddress(userId, addressDto);
@@ -58,7 +64,13 @@ public class AddressController {
 		return ResponseEntity.created(location).body(addressResponse);
 	}
 	
-	@PutMapping("/addresses/{addressId}")
+	@PutMapping(path = "/addresses/{addressId}",
+				consumes = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				},
+				produces = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE
+				})
 	public ResponseEntity<AddressResponse> updateAddress(@PathVariable("addressId") String addressId, @RequestBody AddressRequest addressRequest) {
 		AddressDto addressDto = addressRequestMapper.mapAddressRequestToAddressDto(addressRequest);
 		addressDto = addressService.updateAddress(addressId, addressDto);
