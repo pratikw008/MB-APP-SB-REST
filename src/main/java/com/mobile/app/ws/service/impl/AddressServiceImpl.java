@@ -48,7 +48,6 @@ public class AddressServiceImpl implements IAddressService {
 		return userRepository.findByUserId(userId)
 							 .map(userEntity -> saveAddress(userEntity,addressDto))
 							 .orElseThrow(() -> new InvalidUserIdException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()+userId ));
-		
 	}
 
 	private AddressDto saveAddress(UserEntity userEntity, AddressDto addressDto) {
@@ -58,5 +57,13 @@ public class AddressServiceImpl implements IAddressService {
 		
 		AddressEntity savedInDb = addressRepository.save(addressEntity);
 		return addressMapper.mapAddressEntityToDto(savedInDb);
+	}
+	
+	@Override
+	public AddressDto updateAddress(String addressId, AddressDto addressDto) {
+		AddressEntity addressEntity = addressRepository.findByAddressId(addressId);
+		addressMapper.updateAddress(addressDto, addressEntity);
+		addressEntity = addressRepository.save(addressEntity);
+		return addressMapper.mapAddressEntityToDto(addressEntity);
 	}
 }

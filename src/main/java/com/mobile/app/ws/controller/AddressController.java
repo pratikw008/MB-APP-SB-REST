@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,11 +50,19 @@ public class AddressController {
 	}
 	
 	@PostMapping("/{userId}/addresses")
-	public ResponseEntity<AddressResponse> updateAddress(@PathVariable("userId") String userId,@RequestBody AddressRequest addressRequest) {
+	public ResponseEntity<AddressResponse> createAddress(@PathVariable("userId") String userId,@RequestBody AddressRequest addressRequest) {
 		AddressDto addressDto = addressRequestMapper.mapAddressRequestToAddressDto(addressRequest);
 		AddressDto savedInDb = addressService.createAddress(userId, addressDto);
 		AddressResponse addressResponse = addressMapper.mapAddressDtoToAddressResponse(savedInDb);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{addressId}").buildAndExpand(addressResponse.getAddressId()).toUri();
 		return ResponseEntity.created(location).body(addressResponse);
+	}
+	
+	@PutMapping("/addresses/{addressId}")
+	public ResponseEntity<AddressResponse> updateAddress(@PathVariable("addressId") String addressId, @RequestBody AddressRequest addressRequest) {
+		AddressDto addressDto = addressRequestMapper.mapAddressRequestToAddressDto(addressRequest);
+		addressDto = addressService.updateAddress(addressId, addressDto);
+		AddressResponse addressResponse = addressMapper.mapAddressDtoToAddressResponse(addressDto);
+		return ResponseEntity.ok(addressResponse);
 	}
 }
